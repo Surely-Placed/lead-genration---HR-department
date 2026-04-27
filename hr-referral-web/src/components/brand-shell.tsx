@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 
-import { SurelyPlacedWordmark } from "@/components/surely-placed-wordmark"
+import { SurelyPlacedLogo } from "@/components/surely-placed-logo"
 
 /**
  * Page chrome: SurelyPlaced brand palette (#F2F2F2 / #2857C4 / #38BDB1),
@@ -27,7 +27,7 @@ export function BrandShell({ children }: { children: ReactNode }) {
         <header className="border-b border-[#2857C4]/10 bg-white/75 px-4 py-6 backdrop-blur-md sm:px-6">
           <div className="mx-auto flex max-w-[1100px] flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="space-y-2">
-              <SurelyPlacedWordmark size="lg" />
+              <SurelyPlacedLogo />
               <p className="max-w-md font-sans text-sm font-medium leading-snug text-slate-600">
                 Move from rejections to offers — structured, end-to-end support
                 for full-time roles at leading companies.
@@ -44,14 +44,14 @@ export function BrandShell({ children }: { children: ReactNode }) {
         <footer className="border-t border-slate-200/80 bg-white/60 px-4 py-6 backdrop-blur-sm sm:px-6">
           <div className="mx-auto flex max-w-[1100px] flex-col gap-3 text-center text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:text-left">
             <span>
-              <a
+              {/* <a
                 href="https://www.surelyplaced.com"
                 target="_blank"
                 rel="noreferrer"
                 className="font-medium text-[#2857C4] underline-offset-4 hover:underline"
               >
                 surelyplaced.com
-              </a>
+              </a> */}
               <span className="mx-2 text-slate-300">·</span>
               <a
                 href="mailto:contact@surelyplaced.com"
