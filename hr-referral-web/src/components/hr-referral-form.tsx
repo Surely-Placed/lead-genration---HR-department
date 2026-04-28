@@ -24,6 +24,7 @@ const ctaValues = ["google_meet", "direct_call", "no_call"] as const
 
 const schema = z.object({
   name: z.string().trim().min(2, "Enter your full name."),
+  marketerName: z.string().trim().min(2, "Enter marketer name."),
   email: z.string().trim().email("Enter a valid email address."),
   phone: z.string().refine((val) => isValidPhoneNumber(val), {
     message: "Enter a valid number with country code.",
@@ -92,6 +93,7 @@ export function HrReferralForm() {
     resolver: zodResolver(schema),
     defaultValues: {
       name: "",
+      marketerName: "",
       email: "",
       phone: "",
       cta: "",
@@ -126,12 +128,19 @@ export function HrReferralForm() {
         cta: values.cta,
         utm_id: utm.utm_id,
         utm_source: utm.utm_source,
+        marketer_name: values.marketerName,
       },
       webhookSecret,
     )
 
     if (result.ok) {
-      reset({ name: "", email: "", phone: "", cta: "" })
+      reset({
+        name: "",
+        marketerName: "",
+        email: "",
+        phone: "",
+        cta: "",
+      })
       clearErrors()
       setSuccessMsg("Thanks — we received your details.")
       return
@@ -184,6 +193,25 @@ export function HrReferralForm() {
               />
               {errors.name && (
                 <p className="text-xs text-destructive">{errors.name.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="marketerName" className="font-sans text-slate-700">
+                Marketer name *
+              </Label>
+              <Input
+                id="marketerName"
+                autoComplete="off"
+                placeholder="Marketer name"
+                aria-invalid={!!errors.marketerName}
+                className="h-10 rounded-xl border-slate-200 bg-white font-sans"
+                {...register("marketerName")}
+              />
+              {errors.marketerName && (
+                <p className="text-xs text-destructive">
+                  {errors.marketerName.message}
+                </p>
               )}
             </div>
 

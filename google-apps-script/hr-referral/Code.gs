@@ -9,7 +9,7 @@
  * Deploy → Web app → Execute as: Me, Who has access: Anyone.
  *
  * Sheet "Sheet1" row 1 must match appendRow column order exactly:
- * Submitted at | Name | Email | Phone | UTM_ID | UTM_SOURCE | CTA
+ * Submitted at | Name | Email | Phone | UTM_ID | UTM_SOURCE | CTA | Marketer name
  *
  * HR routing still uses payload utm_id against HR_UTM_MAP (not stored as a separate HR Name column).
  */
@@ -82,6 +82,9 @@ function appendLeadRow_(payload) {
   var ctaKey = validateCta(payload.cta);
   if (!ctaKey) throw new Error("Invalid CTA.");
 
+  var marketerName = String(payload.marketer_name || "").trim();
+  if (marketerName.length < 2) throw new Error("Invalid marketer name.");
+
   if (DEDUPE_EMAIL && emailNorm) {
     var lastRow = sheet.getLastRow();
     if (lastRow >= 2) {
@@ -106,6 +109,7 @@ function appendLeadRow_(payload) {
       utmId,
       String(payload.utm_source || "").trim(),
       CTA_LABELS[ctaKey],
+      marketerName,
     ]);
   } finally {
     try {

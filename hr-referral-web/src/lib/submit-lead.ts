@@ -5,6 +5,7 @@ export type LeadPayload = {
   cta: string
   utm_id: string
   utm_source: string
+  marketer_name: string
 }
 
 export type SubmitResult =
@@ -24,6 +25,7 @@ export async function submitLeadToAppsScript(
     cta: payload.cta,
     utm_id: payload.utm_id,
     utm_source: payload.utm_source,
+    marketer_name: payload.marketer_name,
   }
   if (webhookSecret) body.secret = webhookSecret
 
