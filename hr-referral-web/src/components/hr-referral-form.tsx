@@ -17,14 +17,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { hrDisplayNameForUtmId } from "@/lib/hr-utm-map"
-import { submitLeadToAppsScript } from "@/lib/submit-lead"
+import { submitLeadToAppsScript, type SubmitResult } from "@/lib/submit-lead"
 import { readUtmFromSearch, type UtmPayload } from "@/lib/utm-from-url"
 
 const ctaValues = ["google_meet", "direct_call", "no_call"] as const
 
 const schema = z.object({
   name: z.string().trim().min(2, "Enter your full name."),
-  marketerName: z.string().trim().min(2, "Enter marketer name."),
+  referredBy: z.string().trim().min(2, "Enter the name of the person who referred you."),
   email: z.string().trim().email("Enter a valid email address."),
   phone: z.string().refine((val) => isValidPhoneNumber(val), {
     message: "Enter a valid number with country code.",
@@ -93,7 +93,7 @@ export function HrReferralForm() {
     resolver: zodResolver(schema),
     defaultValues: {
       name: "",
-      marketerName: "",
+      referredBy: "",
       email: "",
       phone: "",
       cta: "",
@@ -128,33 +128,34 @@ export function HrReferralForm() {
         cta: values.cta,
         utm_id: utm.utm_id,
         utm_source: utm.utm_source,
-        marketer_name: values.marketerName,
+        referred_by: values.referredBy,
       },
       webhookSecret,
     )
 
-    if (result.ok) {
-      reset({
-        name: "",
-        marketerName: "",
-        email: "",
-        phone: "",
-        cta: "",
+    if (!result.ok) {
+      const failure = result as Extract<SubmitResult, { ok: false }>
+      if (failure.error === "DUPLICATE_EMAIL") {
+        setError("root", {
+          message: failure.message ?? "You already submitted with this email.",
+        })
+        return
+      }
+      setError("root", {
+        message: failure.error || "Something went wrong.",
       })
-      clearErrors()
-      setSuccessMsg("Thanks — we received your details.")
       return
     }
 
-    if (result.error === "DUPLICATE_EMAIL") {
-      setError("root", {
-        message: result.message ?? "You already submitted with this email.",
-      })
-      return
-    }
-    setError("root", {
-      message: result.error || "Something went wrong.",
+    reset({
+      name: "",
+      referredBy: "",
+      email: "",
+      phone: "",
+      cta: "",
     })
+    clearErrors()
+    setSuccessMsg("Thanks — we received your details.")
   }
 
   return (
@@ -197,20 +198,23 @@ export function HrReferralForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="marketerName" className="font-sans text-slate-700">
-                Marketer name *
+              <Label htmlFor="referredBy" className="font-sans text-slate-700">
+                Referred by *
               </Label>
               <Input
-                id="marketerName"
+                id="referredBy"
                 autoComplete="off"
-                placeholder="Marketer name"
-                aria-invalid={!!errors.marketerName}
+                placeholder="Name of the person who shared this link"
+                aria-invalid={!!errors.referredBy}
                 className="h-10 rounded-xl border-slate-200 bg-white font-sans"
-                {...register("marketerName")}
+                {...register("referredBy")}
               />
-              {errors.marketerName && (
+              <p className="font-sans text-[11px] leading-snug text-slate-500">
+                Mention the name of the folk from whom you had received this link.
+              </p>
+              {errors.referredBy && (
                 <p className="text-xs text-destructive">
-                  {errors.marketerName.message}
+                  {errors.referredBy.message}
                 </p>
               )}
             </div>
