@@ -16,9 +16,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
-import { hrDisplayNameForUtmId } from "@/lib/hr-utm-map"
 import { submitLeadToAppsScript, type SubmitResult } from "@/lib/submit-lead"
-import { readUtmFromSearch, type UtmPayload } from "@/lib/utm-from-url"
+import { readUtmFromSearch } from "@/lib/utm-from-url"
 
 const ctaValues = ["google_meet", "direct_call", "no_call"] as const
 
@@ -41,33 +40,6 @@ const schema = z.object({
 
 type FormInput = z.input<typeof schema>
 type FormOutput = z.output<typeof schema>
-
-function utmBanner(utm: UtmPayload) {
-  const label = hrDisplayNameForUtmId(utm.utm_id)
-  if (label) {
-    return (
-      <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#38BDB1]/35 bg-[#38BDB1]/12 px-4 py-2 font-sans text-sm font-semibold text-[#0f766e] shadow-sm">
-        <span
-          aria-hidden
-          className="inline-block size-2 shrink-0 rounded-full bg-[#38BDB1]"
-        />
-        Shared by {label}
-      </div>
-    )
-  }
-  if (utm.utm_id) {
-    return (
-      <div className="mb-5 rounded-xl border border-amber-400/40 bg-amber-50 px-4 py-3 font-sans text-sm font-medium text-amber-950">
-        Unknown utm_id — open the link your HR shared (with ?utm_id=…).
-      </div>
-    )
-  }
-  // return (
-  //   <div className="mb-5 rounded-xl border border-amber-400/40 bg-amber-50 px-4 py-3 font-sans text-sm font-medium text-amber-950">
-  //     {/* Open your HR&apos;s personal link so we can attribute this correctly. */}
-  //   </div>
-  // )
-}
 
 export function HrReferralForm() {
   const utm = useMemo(() => readUtmFromSearch(window.location.search), [])
@@ -160,8 +132,6 @@ export function HrReferralForm() {
 
   return (
     <div className="mx-auto w-full max-w-[520px]">
-      {utmBanner(utm)}
-
       <Card
         className={cn(
           "overflow-hidden rounded-2xl border-0 bg-white/95 shadow-[0_24px_60px_-12px_rgba(40,87,196,0.18)] ring-1 ring-[#2857C4]/10 backdrop-blur-sm",
