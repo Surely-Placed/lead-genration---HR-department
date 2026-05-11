@@ -24,7 +24,11 @@ const ctaValues = ["google_meet", "direct_call", "no_call"] as const
 const schema = z.object({
   name: z.string().trim().min(2, "Enter your full name."),
   referredBy: z.string().trim().min(2, "Enter the name of the person who referred you."),
-  email: z.string().trim().email("Enter a valid email address."),
+  email: z
+    .string()
+    .trim()
+    .transform((s) => (s === "" ? undefined : s))
+    .pipe(z.string().email("Enter a valid email address.").optional()),
   phone: z.string().refine((val) => isValidPhoneNumber(val), {
     message: "Enter a valid number with country code.",
   }),
@@ -94,8 +98,8 @@ export function HrReferralForm() {
     const result = await submitLeadToAppsScript(
       execUrl.trim(),
       {
-        name: values.name,
-        email: values.email,
+                name: values.name,
+        email: values.email ?? "",
         phone: values.phone,
         cta: values.cta,
         utm_id: utm.utm_id,
@@ -191,7 +195,7 @@ export function HrReferralForm() {
 
             <div className="space-y-2">
               <Label htmlFor="email" className="font-sans text-slate-700">
-                Email *
+                Email <span className="text-slate-400">(optional)</span>
               </Label>
               <Input
                 id="email"

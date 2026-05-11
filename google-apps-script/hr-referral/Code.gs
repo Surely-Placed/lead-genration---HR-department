@@ -72,7 +72,7 @@ function appendLeadRow_(payload) {
   }
 
   var emailNorm = normalizeEmail(payload.email);
-  if (!emailNorm || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNorm)) {
+  if (emailNorm && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNorm)) {
     throw new Error("Invalid email.");
   }
 
